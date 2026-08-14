@@ -1,0 +1,6 @@
+name: Castle_defence
+version: '${version}'
+
+main: me.dkprog.castle_defence.Castle_defence
+api-version: '1.21.11'
+load: POSTWORLD

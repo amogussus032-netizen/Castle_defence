@@ -12,5 +12,6 @@ public final class Castle_defence extends JavaPlugin {
     @Override
     public void onDisable() {
         getLogger().info("Castle_defence disabled.");
+        getLogger().info("Castle_defence disabled.");мо
     }
 }

@@ -98,7 +98,7 @@ public class ExplodeEventHandler implements Listener {
     private void breakBlock(World world, Block block, Queue<Block> toBreak) {
         if (block.getType() == Material.AIR) return;
 
-        world.spawnParticle(Particle.BLOCK, block.getLocation().add(0.5, 0.5, 0.5), 200, 0.5, 0.5, 0.5, 1, block.getBlockData());
+        world.spawnParticle(Particle.BLOCK, block.getLocation().add(0.5, 0.5, 0.5), 201, 0.5, 0.5, 0.5, 1, block.getBlockData());
         block.setType(Material.AIR);
         damageTracker.removeBlock(new BlockPosition(block.getX(), block.getY(), block.getZ(), world));
 

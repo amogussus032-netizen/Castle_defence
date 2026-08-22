@@ -2,5 +2,9 @@ name: Castle_defence
 version: '${version}'
 
 main: me.dkprog.castle_defence.Castle_defence
-api-version: '1.21.11'
+api-version: '1.21.8'
 load: POSTWORLD
+commands:
+  visualizeneighbors:
+    description: Показывает количество соседей у каждого структурного блока в слоте
+    usage: /<command>

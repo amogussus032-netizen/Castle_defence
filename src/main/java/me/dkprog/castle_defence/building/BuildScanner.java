@@ -71,6 +71,7 @@ public class BuildScanner {
                     if (!materialWeights.isStructural(block.getType())) continue;
 
                     Component text;
+
                     if (materialWeights.isDecorative(block.getType())) {
                         text = Component.text("dec").color(NamedTextColor.GRAY);
                     } else {
@@ -89,6 +90,45 @@ public class BuildScanner {
 
     private TextColor colorForNeighborCount(int count) {
         double t = count / 6.0;
+        int red = (int) (255 * (1 - t));
+        int green = (int) (255 * t);
+        return TextColor.color(red, green, 0);
+    }
+
+    public void visualizeBlockHp(BuildSlot slot, WallDamageTracker damageTracker) {
+        int minX = (int) Math.floor(slot.getBounds().getMinX());
+        int maxX = (int) Math.ceil(slot.getBounds().getMaxX());
+        int minY = (int) Math.floor(slot.getBounds().getMinY());
+        int maxY = (int) Math.ceil(slot.getBounds().getMaxY());
+        int minZ = (int) Math.floor(slot.getBounds().getMinZ());
+        int maxZ = (int) Math.ceil(slot.getBounds().getMaxZ());
+
+        World world = slot.getWorld();
+
+        for (int x = minX; x <= maxX; x++) {
+            for (int y = minY; y <= maxY; y++) {
+                for (int z = minZ; z <= maxZ; z++) {
+                    Block block = world.getBlockAt(x, y, z);
+
+                    if (!materialWeights.isStructural(block.getType())) continue;
+
+                    BlockPosition position = new BlockPosition(x, y, z, world);
+                    double threshold = materialWeights.getWeight(block.getType()) * (countFilledNeighbors(block) + 1);
+                    double hp = threshold - damageTracker.getBlockDamage(position);
+
+                    Component text = Component.text(String.format("%.1f", hp)).color(colorForHp(hp, threshold));
+
+                    world.spawn(block.getLocation().add(0.5, 0.5, 0.5).add(15, 0, 0), TextDisplay.class, display -> {
+                        display.text(text);
+                        display.setBillboard(Display.Billboard.CENTER);
+                    });
+                }
+            }
+        }
+    }
+
+    private TextColor colorForHp(double hp, double threshold) {
+        double t = threshold == 0 ? 0 : Math.max(0, Math.min(1, hp / threshold));
         int red = (int) (255 * (1 - t));
         int green = (int) (255 * t);
         return TextColor.color(red, green, 0);

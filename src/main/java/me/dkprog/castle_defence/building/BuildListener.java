@@ -12,11 +12,13 @@ public class BuildListener implements Listener {
     private final BuildSlot slot;
     private final BuildScanner scanner;
     private final JavaPlugin plugin;
+    private final WallDamageTracker wallDamageTracker;
 
-    public BuildListener(BuildSlot slot, BuildScanner scanner, JavaPlugin plugin) {
+    public BuildListener(BuildSlot slot, BuildScanner scanner, WallDamageTracker wallDamageTracker, JavaPlugin plugin) {
         this.slot = slot;
         this.scanner = scanner;
         this.plugin = plugin;
+        this.wallDamageTracker = wallDamageTracker;
     }
 
     @EventHandler
@@ -35,6 +37,8 @@ public class BuildListener implements Listener {
         Block block = event.getBlock();
 
         if (!slot.getBounds().contains(block.getX(), block.getY(), block.getZ())) return;
+
+        wallDamageTracker.clearDamage(new BlockPosition(block.getX(), block.getY(), block.getZ(), slot.getWorld()));
 
         Bukkit.getScheduler().runTask(plugin, () -> {
             BuildStats stats = scanner.scanBuilding(slot);

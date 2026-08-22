@@ -19,12 +19,15 @@ public final class Castle_defence extends JavaPlugin {
         double startY = spawnLocation.getY();
         double startZ = spawnLocation.getZ();
 
-        BuildSlot firstSlot = new BuildSlot(BuildSlot.SlotType.WALL, new BoundingBox(startX, startY, startZ, startX + 10, startY + 10, startZ + 10), world, BuildSlot.Axis.Y);
+        BuildSlot firstSlot = new BuildSlot(BuildSlot.SlotType.WALL, new BoundingBox(startX-2, startY-2, startZ-2, startX + 10, startY + 10, startZ + 10), world, BuildSlot.Axis.Y);
         MaterialWeights weights = new MaterialWeights();
         BuildScanner scanner = new BuildScanner(weights);
+        WallDamageTracker wallDamageTracker = new WallDamageTracker();
 
-        getServer().getPluginManager().registerEvents(new BuildListener(firstSlot, scanner, this), this);
+        getServer().getPluginManager().registerEvents(new BuildListener(firstSlot, scanner, wallDamageTracker, this), this);
+        getServer().getPluginManager().registerEvents(new ExplodeEventHandler(firstSlot, scanner, weights, wallDamageTracker), this);
         getCommand("visualizeneighbors").setExecutor(new NeighborsVisualizeCommand(firstSlot, scanner));
+        getCommand("visualizehp").setExecutor(new HpVisualizeCommand(firstSlot, scanner, wallDamageTracker));
     }
 
     @Override

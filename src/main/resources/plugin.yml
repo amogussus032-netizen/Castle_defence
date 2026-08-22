@@ -8,3 +8,6 @@ commands:
   visualizeneighbors:
     description: Показывает количество соседей у каждого структурного блока в слоте
     usage: /<command>
+  visualizehp:
+    description: Показывает оставшееся ХП (порог - накопленный урон) каждого структурного блока в слоте, голограммой со смещением +15 по X
+    usage: /<command>

@@ -23,6 +23,6 @@ copy /Y "target\castle_defence-0.1.jar" "%SERVER_DIR%\plugins\castle_defence-0.1
 
 echo === Starting server ===
 cd /d "%SERVER_DIR%"
-java -Xms4G -Xmx4G -jar server.jar nogui
+java -Dstdout.encoding=UTF-8 -Dstderr.encoding=UTF-8 -Dfile.encoding=UTF-8 -Xms4G -Xmx4G -jar server.jar nogui
 
 endlocal

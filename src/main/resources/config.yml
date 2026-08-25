@@ -1,0 +1,17 @@
+buildslots:
+  - x1: 0
+    y1: 0
+    z1: 0
+    x2: 10
+    y2: 10
+    z2: 10
+    world: "world"
+    type: "WALL"
+  - x1: 15
+    y1: 0
+    z1: 0
+    x2: 25
+    y2: 10
+    z2: 10
+    world: "world"
+    type: "WALL"

@@ -21,7 +21,7 @@ public class ExplodeEventHandler implements Listener {
     private final MaterialWeights weights;
     private final WallDamageTracker damageTracker;
 
-    private final double explosionRadius = 3.0;
+    private final double explosionRadius = 3;
     double BASE_DAMAGE_PER_HIT = 30;
 
     public ExplodeEventHandler(BuildSlot slot, BuildScanner scanner, MaterialWeights weights, WallDamageTracker damageTracker) {
@@ -67,7 +67,8 @@ public class ExplodeEventHandler implements Listener {
 
                     if (distanceToExplosion > explosionRadius) continue;
 
-                    double distanceFactor = 1.0 - 0.3 * (distanceToExplosion / explosionRadius);
+                    double distanceRatio = distanceToExplosion / explosionRadius;
+                    double distanceFactor = 1.0 - 0.5 * (distanceRatio * distanceRatio);
                     double damageToBlock = distanceFactor * BASE_DAMAGE_PER_HIT;
 
                     BlockPosition position = new BlockPosition(x, y, z, world);

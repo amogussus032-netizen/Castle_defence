@@ -1,6 +1,8 @@
 package me.dkprog.castle_defence;
 
 import me.dkprog.castle_defence.building.*;
+import me.dkprog.castle_defence.player_classes.ClassSetCommand;
+import me.dkprog.castle_defence.player_classes.PlayerClassManager;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.World;
@@ -23,11 +25,14 @@ public final class Castle_defence extends JavaPlugin {
         MaterialWeights weights = new MaterialWeights();
         BuildScanner scanner = new BuildScanner(weights);
         WallDamageTracker wallDamageTracker = new WallDamageTracker();
+        PlayerClassManager classManager = new PlayerClassManager(this);
 
         getServer().getPluginManager().registerEvents(new BuildListener(firstSlot, scanner, wallDamageTracker, this), this);
         getServer().getPluginManager().registerEvents(new ExplodeEventHandler(firstSlot, scanner, weights, wallDamageTracker), this);
+        getServer().getPluginManager().registerEvents(classManager, this);
         getCommand("visualizeneighbors").setExecutor(new NeighborsVisualizeCommand(firstSlot, scanner));
         getCommand("visualizehp").setExecutor(new HpVisualizeCommand(firstSlot, scanner, wallDamageTracker));
+        getCommand("setplayerclass").setExecutor(new ClassSetCommand(classManager));
     }
 
     @Override

@@ -23,9 +23,8 @@ public class BuildScanner {
         this.materialWeights = materialWeights;
     }
 
-    public BuildStats scanBuilding(BuildSlot slot) {
+    public int scanBuilding(BuildSlot slot) {
         int blocksCount = 0;
-        int weightsSum = 0;
 
         int minX = (int) Math.floor(slot.getBounds().getMinX());
         int maxX = (int) Math.ceil(slot.getBounds().getMaxX());
@@ -44,12 +43,11 @@ public class BuildScanner {
                     if (!materialWeights.isStructural(block.getType())) continue;
 
                     blocksCount++;
-                    weightsSum += materialWeights.getWeight(block.getType());
                 }
             }
         }
 
-        return new BuildStats(blocksCount, weightsSum, materialWeights);
+        return blocksCount;
     }
 
     public void visualizeNeighborCount(BuildSlot slot) {

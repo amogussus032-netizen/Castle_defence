@@ -27,9 +27,9 @@ public class BuildListener implements Listener {
 
         if (!slot.getBounds().contains(block.getX(), block.getY(), block.getZ())) return;
 
-        BuildStats stats = scanner.scanBuilding(slot);
+        int blocksCount = scanner.scanBuilding(slot);
 
-        event.getPlayer().sendMessage("totalBlocks=" + stats.getBlocksCount());
+        event.getPlayer().sendMessage("totalBlocks=" + blocksCount);
     }
 
     @EventHandler
@@ -38,12 +38,12 @@ public class BuildListener implements Listener {
 
         if (!slot.getBounds().contains(block.getX(), block.getY(), block.getZ())) return;
 
-        wallDamageTracker.clearDamage(new BlockPosition(block.getX(), block.getY(), block.getZ(), slot.getWorld()));
+        wallDamageTracker.removeBlock(new BlockPosition(block.getX(), block.getY(), block.getZ(), slot.getWorld()));
 
         Bukkit.getScheduler().runTask(plugin, () -> {
-            BuildStats stats = scanner.scanBuilding(slot);
+            int blocksCount = scanner.scanBuilding(slot);
 
-            event.getPlayer().sendMessage("totalBlocks=" + stats.getBlocksCount());
+            event.getPlayer().sendMessage("totalBlocks=" + blocksCount);
         });
     }
 }

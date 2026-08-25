@@ -6,16 +6,14 @@ import org.bukkit.util.BoundingBox;
 public class BuildSlot {
 
     private final SlotType type;
-    private final Axis sliceAxis;
 
     private final BoundingBox bounds;
     private final World world;
 
-    public BuildSlot(SlotType type, BoundingBox bounds, World world, Axis sliceAxis) {
+    public BuildSlot(SlotType type, BoundingBox bounds, World world) {
         this.type = type;
         this.bounds = bounds;
         this.world = world;
-        this.sliceAxis = sliceAxis;
     }
 
     public BoundingBox getBounds() {
@@ -30,18 +28,8 @@ public class BuildSlot {
         return type;
     }
 
-    public Axis getSliceAxis() {
-        return sliceAxis;
-    }
-
     public enum SlotType {
         WALL,
         TOWER
-    }
-
-    public enum Axis {
-        X,
-        Y,
-        Z
     }
 }

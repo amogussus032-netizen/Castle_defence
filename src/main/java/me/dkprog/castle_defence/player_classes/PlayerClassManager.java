@@ -83,7 +83,7 @@ public class PlayerClassManager implements Listener {
                 mainScoreboard.registerNewTeam(teamName);
                 team = mainScoreboard.getTeam(teamName);
             }
-            Component prefixText = Component.text(teamName.toLowerCase()).color(type.getPrefixColor());
+            Component prefixText = Component.text("[" + type.getPrefixText() + "] ").color(type.getPrefixColor());
 
             team.prefix(prefixText);
         }

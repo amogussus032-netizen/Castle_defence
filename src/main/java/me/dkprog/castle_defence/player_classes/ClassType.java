@@ -8,7 +8,8 @@ public enum ClassType {
     DEFAULT(List.of(), NamedTextColor.GRAY, "Дурачок"),
     ARCHER(List.of(), NamedTextColor.GREEN, "Лучник"),
     WARRIOR(List.of(), NamedTextColor.RED, "Воин"),
-    ENGINEER(List.of(), NamedTextColor.GOLD, "Инженер");
+    ENGINEER(List.of(), NamedTextColor.GOLD, "Инженер"),
+    ADMIN(List.of(), NamedTextColor.AQUA, "МЕГАКРУТОЙ");
 
     private final List<Ability> playerAbilities;
     private final NamedTextColor prefixColor;

@@ -27,12 +27,21 @@ public final class Castle_defence extends JavaPlugin {
         WallDamageTracker wallDamageTracker = new WallDamageTracker();
         PlayerClassManager classManager = new PlayerClassManager(this);
 
-        getServer().getPluginManager().registerEvents(new BuildListener(firstSlot, scanner, wallDamageTracker, this), this);
-        getServer().getPluginManager().registerEvents(new ExplodeEventHandler(firstSlot, scanner, weights, wallDamageTracker), this);
-        getServer().getPluginManager().registerEvents(classManager, this);
-        getCommand("visualizeneighbors").setExecutor(new NeighborsVisualizeCommand(firstSlot, scanner));
-        getCommand("visualizehp").setExecutor(new HpVisualizeCommand(firstSlot, scanner, wallDamageTracker));
-        getCommand("setplayerclass").setExecutor(new ClassSetCommand(classManager));
+        try {
+            this.saveDefaultConfig();
+            BuildingSlotsManager slotsManager = new BuildingSlotsManager(this.getConfig());
+            List<BuildSlot> buildSlots = slotsManager.getBuildSlotsList();
+            getServer().getPluginManager().registerEvents(new BuildListener(buildSlots, scanner, wallDamageTracker, this), this);
+            getServer().getPluginManager().registerEvents(new ExplodeEventHandler(buildSlots, scanner, weights, wallDamageTracker), this);
+            getServer().getPluginManager().registerEvents(classManager, this);
+            getCommand("visualizeneighbors").setExecutor(new NeighborsVisualizeCommand(buildSlots, scanner));
+            getCommand("visualizehp").setExecutor(new HpVisualizeCommand(buildSlots, scanner, wallDamageTracker));
+            getCommand("setplayerclass").setExecutor(new ClassSetCommand(classManager));
+            getLogger().info("Castle_defence enabled successfully!");
+        } catch (IllegalArgumentException e) {
+            getLogger().severe(e.getMessage());
+            getServer().getPluginManager().disablePlugin(this);
+        }
     }
 
     @Override

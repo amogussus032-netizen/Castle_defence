@@ -1,5 +1,6 @@
 package me.dkprog.castle_defence.building;
 
+import me.dkprog.castle_defence.ParticleManager;
 import org.bukkit.Bukkit;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.util.BoundingBox;
@@ -18,7 +19,8 @@ public class BuildingSlotsManager {
         for (Map<?, ?> slotParameters : buildSlotsParameters) {
             if (!(checkParameters(slotParameters))) throw errorMessage;
 
-            buildSlotsList.add(new BuildSlot(BuildSlot.SlotType.valueOf((String) slotParameters.get("type")), new BoundingBox(((Number) slotParameters.get("x1")).intValue(), ((Number) slotParameters.get("y1")).intValue(), ((Number) slotParameters.get("z1")).intValue(), ((Number) slotParameters.get("x2")).intValue(), ((Number) slotParameters.get("y2")).intValue(), ((Number) slotParameters.get("z2")).intValue()), Bukkit.getWorld((String) slotParameters.get("world"))));
+            BuildSlot slot = new BuildSlot(BuildSlot.SlotType.valueOf((String) slotParameters.get("type")), new BoundingBox(((Number) slotParameters.get("x1")).intValue(), ((Number) slotParameters.get("y1")).intValue(), ((Number) slotParameters.get("z1")).intValue(), ((Number) slotParameters.get("x2")).intValue(), ((Number) slotParameters.get("y2")).intValue(), ((Number) slotParameters.get("z2")).intValue()), Bukkit.getWorld((String) slotParameters.get("world")));
+            buildSlotsList.add(slot);
         }
 
     }

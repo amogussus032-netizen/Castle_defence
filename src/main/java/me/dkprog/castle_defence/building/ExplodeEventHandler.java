@@ -16,7 +16,7 @@ import org.bukkit.util.BoundingBox;
 import java.util.*;
 
 public class ExplodeEventHandler implements Listener {
-    private final BuildSlot slot;
+    private final List<BuildSlot> buildSlots;
     private final BuildScanner scanner;
     private final MaterialWeights weights;
     private final WallDamageTracker damageTracker;
@@ -24,8 +24,8 @@ public class ExplodeEventHandler implements Listener {
     private final double explosionRadius = 3;
     double BASE_DAMAGE_PER_HIT = 30;
 
-    public ExplodeEventHandler(BuildSlot slot, BuildScanner scanner, MaterialWeights weights, WallDamageTracker damageTracker) {
-        this.slot  = slot;
+    public ExplodeEventHandler(List<BuildSlot> slotsList, BuildScanner scanner, MaterialWeights weights, WallDamageTracker damageTracker) {
+        this.buildSlots  = slotsList;
         this.scanner = scanner;
         this.weights = weights;
         this.damageTracker = damageTracker;
@@ -35,64 +35,68 @@ public class ExplodeEventHandler implements Listener {
     public void onExplode(EntityExplodeEvent event) {
 
         if (!(event.getEntity() instanceof TNTPrimed)) return;
-        if (!(slot.getType() == BuildSlot.SlotType.WALL)) return;
 
         Location center = event.getLocation();
-        BoundingBox explosionBox = new BoundingBox(center.getX()-explosionRadius, center.getY()-explosionRadius, center.getZ()-explosionRadius, center.getX()+explosionRadius, center.getY()+explosionRadius, center.getZ()+explosionRadius);
 
-        if (!explosionBox.overlaps(slot.getBounds())) return;
+        for (BuildSlot slot : buildSlots) {
+            if (!(slot.getType() == BuildSlot.SlotType.WALL)) continue;
 
-        event.blockList().clear();
+            BoundingBox explosionBox = new BoundingBox(center.getX() - explosionRadius, center.getY() - explosionRadius, center.getZ() - explosionRadius, center.getX() + explosionRadius, center.getY() + explosionRadius, center.getZ() + explosionRadius);
 
-        explosionBox.intersection(slot.getBounds());
+            if (!explosionBox.overlaps(slot.getBounds())) continue;
+            if (!slot.getWorld().equals(event.getEntity().getWorld())) continue;
 
-        int minX = (int) Math.floor(explosionBox.getMinX());
-        int maxX = (int) Math.ceil(explosionBox.getMaxX());
-        int minY = (int) Math.floor(explosionBox.getMinY());
-        int maxY = (int) Math.ceil(explosionBox.getMaxY());
-        int minZ = (int) Math.floor(explosionBox.getMinZ());
-        int maxZ = (int) Math.ceil(explosionBox.getMaxZ());
+            event.blockList().clear();
 
-        World world = slot.getWorld();
-        Queue<Block> toBreak = new ArrayDeque<>();
+            explosionBox.intersection(slot.getBounds());
 
-        for (int x = minX; x <= maxX; x++) {
-            for (int y = minY; y <= maxY; y++) {
-                for (int z = minZ; z <= maxZ; z++) {
-                    Block block = world.getBlockAt(x, y, z);
+            int minX = (int) Math.floor(explosionBox.getMinX());
+            int maxX = (int) Math.ceil(explosionBox.getMaxX());
+            int minY = (int) Math.floor(explosionBox.getMinY());
+            int maxY = (int) Math.ceil(explosionBox.getMaxY());
+            int minZ = (int) Math.floor(explosionBox.getMinZ());
+            int maxZ = (int) Math.ceil(explosionBox.getMaxZ());
 
-                    if (!(weights.isStructural(block.getType()))) continue;
+            World world = slot.getWorld();
+            Queue<Block> toBreak = new ArrayDeque<>();
 
-                    double distanceToExplosion = block.getLocation().add(0.5, 0.5, 0.5).distance(center);
+            for (int x = minX; x <= maxX; x++) {
+                for (int y = minY; y <= maxY; y++) {
+                    for (int z = minZ; z <= maxZ; z++) {
+                        Block block = world.getBlockAt(x, y, z);
 
-                    if (distanceToExplosion > explosionRadius) continue;
+                        if (!(weights.isStructural(block.getType()))) continue;
 
-                    double distanceRatio = distanceToExplosion / explosionRadius;
-                    double distanceFactor = 1.0 - 0.5 * (distanceRatio * distanceRatio);
-                    double damageToBlock = distanceFactor * BASE_DAMAGE_PER_HIT;
+                        double distanceToExplosion = block.getLocation().add(0.5, 0.5, 0.5).distance(center);
 
-                    BlockPosition position = new BlockPosition(x, y, z, world);
-                    damageTracker.addDamage(position, damageToBlock);
+                        if (distanceToExplosion > explosionRadius) continue;
 
-                    double blockThreshold = weights.getWeight(block.getType()) * (scanner.countFilledNeighbors(block) + 1);
+                        double distanceRatio = distanceToExplosion / explosionRadius;
+                        double distanceFactor = 1.0 - 0.5 * (distanceRatio * distanceRatio);
+                        double damageToBlock = distanceFactor * BASE_DAMAGE_PER_HIT;
 
-                    if (damageTracker.getBlockDamage(position) >= blockThreshold) {
-                        toBreak.add(block);
-                    }
-                    else {
-                        Collection<Player> nearPlayers = center.getNearbyPlayers(30);
-                        float progress = (float) (damageTracker.getBlockDamage(position) / blockThreshold);
-                        for (Player player : nearPlayers) {
-                            player.sendBlockDamage(block.getLocation(), progress, position.hashCode());
+                        BlockPosition position = new BlockPosition(x, y, z, world);
+                        damageTracker.addDamage(position, damageToBlock);
+
+                        double blockThreshold = weights.getWeight(block.getType()) * (scanner.countFilledNeighbors(block) + 1);
+
+                        if (damageTracker.getBlockDamage(position) >= blockThreshold) {
+                            toBreak.add(block);
+                        } else {
+                            Collection<Player> nearPlayers = center.getNearbyPlayers(30);
+                            float progress = (float) (damageTracker.getBlockDamage(position) / blockThreshold);
+                            for (Player player : nearPlayers) {
+                                player.sendBlockDamage(block.getLocation(), progress, position.hashCode());
+                            }
                         }
                     }
                 }
             }
-        }
 
-        while (!toBreak.isEmpty()) {
-            Block block = toBreak.poll();
-            breakBlock(world, block, toBreak);
+            while (!toBreak.isEmpty()) {
+                Block block = toBreak.poll();
+                breakBlock(world, block, toBreak);
+            }
         }
     }
 

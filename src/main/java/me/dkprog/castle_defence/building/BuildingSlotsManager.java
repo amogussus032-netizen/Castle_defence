@@ -1,7 +1,6 @@
 package me.dkprog.castle_defence.building;
 
 import org.bukkit.Bukkit;
-import org.bukkit.World;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.util.BoundingBox;
 
@@ -40,5 +39,9 @@ public class BuildingSlotsManager {
         }
 
         return true;
+    }
+
+    public List<BuildSlot> getBuildSlotsList() {
+        return new ArrayList<>(buildSlotsList); //Создаётся копия чтобы не передавать ссылку на оригинальный лист(защита от изменений)
     }
 }
